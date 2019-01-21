@@ -1,0 +1,154 @@
+package fr.eseo.command;
+
+import java.awt.Point;
+import java.util.Observable;
+import java.util.Observer;
+
+import fr.eseo.communication.Client;
+import fr.eseo.communication.ProtocoleMonkeyIsland;
+import fr.eseo.communication.ServiceMonkeyIsland;
+import fr.eseo.model.CollisionException;
+import fr.eseo.model.Configuration;
+import fr.eseo.model.CrazyMonkey;
+import fr.eseo.model.HunterMonkey;
+import fr.eseo.model.Island;
+import fr.eseo.model.Monkey;
+import fr.eseo.model.Pirate;
+import fr.eseo.model.Rhum;
+import fr.eseo.model.Treasure;
+
+/**
+ * The class Action for the design pattern Command.
+ */
+public class Action implements Observer{
+	
+	private String message;
+	
+	private int id;
+	
+	/**
+	 * Serveur MonkeyIsland du client.
+	 */
+	private ServiceMonkeyIsland monkeyIsland;
+	
+	private Client client;
+	
+	private Pirate pirate;
+	
+	/**
+	 * Instantiates a new Action.
+	 * @param monkeyIsland the service of the game
+	 * @param client the client of the game
+	 * @param message the message of the action
+	 */
+	public Action(ServiceMonkeyIsland monkeyIsland, Client client, String message){
+		this.message = message;
+		this.monkeyIsland = monkeyIsland;
+		this.client = client;
+		this.id = ProtocoleMonkeyIsland.formaterIdentificationPort(client);
+	}
+	
+	public void addObserver(){
+		if(Island.getInstance().getRhums().isEmpty() == false){
+			for(Rhum rhum: Island.getInstance().getRhums()){
+				rhum.addObserver(this);
+			}
+		}
+		if(Island.getInstance().getMonkeys().isEmpty() == false){
+			for(Monkey monkey: Island.getInstance().getMonkeys()){
+				monkey.addObserver(this);
+			}
+		}
+		Treasure.getTreasure().addObserver(this);
+	}
+	
+	/**
+	 * Register a new client for the game.
+	 */
+	public void inscription(){
+		this.monkeyIsland.inscriptionCanal(client); 
+		Point p = Island.getInstance().addPirate();
+		this.pirate = new Pirate(this.id, Configuration.getInstance().getNRJMax(), p.x, p.y);
+		this.addObserver();
+		Island.getInstance().getPirates().add(pirate);
+		Island.getInstance().getPirates().get(Island.getInstance().getPirates().size()-1).addObserver(this);
+		this.client.envoieMessage(ProtocoleMonkeyIsland.formatteMessageIndicationCarte(Island.getInstance().getCase()));	
+		this.client.envoieMessage(ProtocoleMonkeyIsland.MESSAGE_INSCRIPTION);
+		this.client.envoieMessage(ProtocoleMonkeyIsland.formaterIdentificationPirate(this.pirate));
+		this.client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionRhum(Island.getInstance().getRhums()));
+		this.client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionSingeCrazy(Island.getInstance().getMonkeys()));
+		this.client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionSingeHunter(Island.getInstance().getMonkeys()));
+	}
+
+	
+	/**
+	 * Handle the movement of the pirate of the client.
+	 */
+	public void movePirate(){
+		try{
+			final Point p = ProtocoleMonkeyIsland.commandeDuDeplacement(message);
+			for(Pirate piratList : Island.getInstance().getPirates()){
+				if(this.id == piratList.getId()){
+					piratList.movementPirate(p.x, p.y);
+				}
+			}
+		}catch (CollisionException e) {
+			this.client.envoieMessage(ProtocoleMonkeyIsland.formaterRefusDeplacementPirate());
+			System.err.println(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Called when the client wants to go up.
+	 */
+	public void demandUp(){
+		this.client.envoieMessage("/D -1 0");
+	}
+	
+	/**
+	 * Called when the client wants to go down.
+	 */
+	public void demandDown(){
+		this.client.envoieMessage("/D 0 1");
+	}
+	
+	/**
+	 * Called when the client wants to go to the right.
+	 */
+	public void demandRight(){
+		this.client.envoieMessage("/D 1 0");
+	}
+	
+	/**
+	 * Called when the client wants to go to the left.
+	 */
+	public void demandLeft(){
+		this.client.envoieMessage("/D -1 0");
+	}
+
+	@Override
+	public void update(Observable o, Object arg1) {
+		if(o instanceof Pirate){
+			for(Pirate piratList : Island.getInstance().getPirates()){
+				if(this.id == piratList.getId()){
+					this.client.envoieMessage(
+							ProtocoleMonkeyIsland.formaterAcceptationDeplacementPirate(piratList));
+				}
+			}
+			//this.client.envoieMessage(ProtocoleMonkeyIsland.formaterDeplacementPirate(this.pirate));
+		}else if(o instanceof Rhum){
+			for(Rhum rhum : Island.getInstance().getRhums()){
+				this.client.envoieMessage(
+						ProtocoleMonkeyIsland.formaterIdentificationRhum(rhum, Island.getInstance().getRhums().indexOf(rhum)));
+			}
+		}else if(o instanceof Treasure){
+			this.client.envoieMessage(ProtocoleMonkeyIsland.formaterIdentificationTreasure());
+		}else if(o instanceof CrazyMonkey){
+			this.client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionSingeCrazy(Island.getInstance().getMonkeys()));
+		}else if(o instanceof HunterMonkey){	
+			this.client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionSingeHunter(Island.getInstance().getMonkeys()));
+		}
+	}
+
+}
+	

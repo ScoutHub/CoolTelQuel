@@ -1,0 +1,15 @@
+package fr.eseo.command;
+
+public class DemandUp implements Command{
+	
+	private Action action;
+	 
+	public DemandUp(Action action){
+	    this.action = action;
+	}
+	
+	@Override
+	public void execute() {
+		action.demandUp();
+	}
+}

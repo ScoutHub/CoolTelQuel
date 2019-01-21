@@ -1,0 +1,174 @@
+package fr.eseo.model.test;
+
+import static org.junit.Assert.*;
+
+import java.awt.Point;
+
+import org.junit.Before;
+import org.junit.Test;
+import fr.eseo.model.*;
+
+public class TestIsland {
+	
+	private Island isl;
+	
+	private Pirate pirate;
+	
+	private Pirate pirate2;
+	
+	private static final int NB_ROWS = 3;
+	
+	private static final int NB_LINES = 3;
+	
+	@Before
+	public void setUp() throws Exception{	
+		
+		isl = Island.getInstance();
+		pirate = new Pirate(0, 0);
+		pirate2 = new Pirate(5, 5);
+		//CrazyMonkey = new Pirate(5, 5);
+	}
+	
+	@Test
+	public void testInitIsland(){
+		isl.setnbLines(NB_LINES);
+		isl.setnbRows(NB_ROWS);
+		isl.setIsland(NB_LINES, NB_ROWS);
+		for(int i = 0; i< NB_ROWS; i++){
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[i][0].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[i][2].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[0][i].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[2][i].getCaseType());
+		}
+		assertEquals("Error type case", CaseType.earth, isl.getCase()[1][1].getCaseType());
+	}
+	
+	@Test
+	public void testSetIsland(){
+		assertEquals("Error type case", Island.getInstance().getnbLines(), 3);
+		isl.setIsland(30, 30);
+		assertEquals("Error type case", Island.getInstance().getnbLines(), 30);
+		isl.getPirates().add(pirate2);
+	}
+
+	/**
+	 * Test position pirate.
+	 * @throws CollisionException 
+	 */
+	@Test
+	public void testRandompirate(){
+		int position = 0;
+		int errorSea = 0;
+		int errorIsl = 0;
+		int errorPir = 0;
+		int errorMonk = 0;
+		for (int i = 0; i< 2000; i++){
+			try {
+				Point p = Island.getInstance().addEntity();
+				Island.getInstance().position(p.x, p.y);
+				pirate.setCoordinateX(p.x);
+				pirate.setCoordinateY(p.y);
+				if((pirate.getCoordinateX() > 0 && pirate.getCoordinateX() < Island.getInstance().getnbLines()-1) && (pirate.getCoordinateY() > 0 && pirate.getCoordinateY() < Island.getInstance().getnbRows()-1)){
+					position++;
+				}
+			} catch (CollisionException e) {
+				if(e.getExceptionCause() == CollisionException.COLLISION_SEA){
+					errorSea++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_EXIT_ISLAND){
+					errorIsl++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_PIRATE){
+					errorPir++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_MONKEY){
+					errorMonk++;
+				}
+			}
+		}
+		assertEquals("Error, miss some positions", 2000-errorPir, position);
+		assertTrue("Error, at least one collision with pirate", errorPir >= 1);
+		assertTrue("Error, at least one collision with monkey", errorMonk == 0);
+		assertEquals("Error, pirateasure on case sea", 0, errorSea);
+		assertEquals("Error, exit Island !!!", 0, errorIsl);
+	}
+	
+	
+	@Test
+	public void testPositionpirateOutIsl(){
+		pirate.setCoordinateX(0);
+		pirate.setCoordinateY(0);
+		try {
+			Island.getInstance().position(30, 30);
+			fail("Should throw exception when out of Island");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("exit island!!"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_EXIT_ISLAND);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.pirate.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.pirate.getCoordinateY());
+	}
+	
+	@Test
+	public void testPositionpirateSeaCase(){
+		pirate.setCoordinateX(0);
+		pirate.setCoordinateY(0);
+		try {
+			Island.getInstance().position(0, 10);
+			fail("Should throw exception when case sea");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case sea not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_SEA);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.pirate.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.pirate.getCoordinateY());
+	}
+	
+	/** 
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testPositionpiratePirateCase(){
+		pirate.setCoordinateX(0);
+		pirate.setCoordinateY(0);
+		try {
+			Island.getInstance().position(5, 5);
+			fail("Should throw exception when on Pirate");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case pirate not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_PIRATE);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.pirate.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.pirate.getCoordinateY());
+	}
+	
+	/** 
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testPositionpirateMonkeyCase(){
+		pirate.setCoordinateX(0);
+		pirate.setCoordinateY(0);
+		try {
+			Island.getInstance().position(7, 7);
+			fail("Should throw exception when on Monkey");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case monkey not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_MONKEY);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.pirate.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.pirate.getCoordinateY());
+	}
+	
+	@Test
+	public void testPositionpirate(){
+		pirate.setCoordinateX(0);
+		pirate.setCoordinateY(0);
+		try {
+			Island.getInstance().position(10, 15);
+		}catch (CollisionException e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("Not in right place X", 10, this.pirate.getCoordinateX());
+		assertEquals("Not in right place Y", 15, this.pirate.getCoordinateY());
+	}
+}

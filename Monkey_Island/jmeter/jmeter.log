@@ -1,0 +1,13 @@
+2017/02/01 18:20:15 INFO  - jmeter.util.JMeterUtils: Setting Locale to fr_FR 
+2017/02/01 18:20:16 INFO  - jmeter.util.JMeterUtils: Could not find resources for 'fr_FR', using 'fr' 
+2017/02/01 18:20:16 INFO  - jmeter.JMeter: Loading user properties from: C:\Users\Public\apache-jmeter-3.1\bin\user.properties 
+2017/02/01 18:20:16 INFO  - jmeter.JMeter: Loading system properties from: C:\Users\Public\apache-jmeter-3.1\bin\system.properties 
+2017/02/01 18:20:16 FATAL - jmeter.JMeter: An error occurred:  java.lang.IllegalArgumentException: Unknown arg: C:/Users/THIBAU~1/workspace/Monkey_Island/jmeter/user.properties
+	at org.apache.jmeter.JMeter.initializeProperties(JMeter.java:749)
+	at org.apache.jmeter.JMeter.start(JMeter.java:388)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.jmeter.NewDriver.main(NewDriver.java:259)
+

@@ -1,0 +1,473 @@
+/*
+ * 
+ */
+package fr.eseo.model.test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import fr.eseo.model.CrazyMonkey;
+import fr.eseo.model.Island;
+import fr.eseo.model.Monkey;
+import fr.eseo.model.Pirate;
+import fr.eseo.model.Rhum;
+import fr.eseo.model.StatePirate;
+
+// TODO: Auto-generated Javadoc
+// 
+/**
+ * The Class TestCrazyMonkey.
+ */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Island.class)
+public class TestCrazyMonkey {
+
+	/** The Constant NB_ROWS. */
+	/* Largeur de l'île */
+	private static final int NB_ROWS = 30;
+	
+	/** The Constant NB_LINES. */
+	/* Longueur de l'île */
+	private static final int NB_LINES = 30;
+	
+	/** The Constant X_MONKEY. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int X_MONKEY = 10;
+	
+	/** The Constant Y_MONKEY. */
+	/* Coordonnée Y d'un singe �rratique */
+	private static final int Y_MONKEY = 10;
+	
+	/** The Constant X_MONKEY. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int X_MONKEY_SEA = 29;
+	
+	/** The Constant X_MONKEY. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int Y_MONKEY_SEA = 29;
+	
+	/** The Constant X_PIRATE. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int X_PIRATE = 20;
+	
+	/** The Constant Y_Pirate. */
+	/* Coordonnée Y d'un singe �rratique */
+	private static final int Y_PIRATE = 20;
+	
+	/** The Constant X_PIRATE. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int X_PIRATE_SEA = 28;
+	
+	/** The Constant X_PIRATE. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int Y_PIRATE_SEA = 29;
+	
+	/** The Constant X_PIRATE. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int X_MONKEY_RHUM = 5;
+	
+	/** The Constant X_PIRATE. */
+	/* Coordonnée X d'un singe �rratique */
+	private static final int Y_MONKEY_RHUM = 5;
+	
+	/** The Constant DEFAULT_SPEED. */
+	/*Vitesse du singe �rratique */
+	public static final int DEFAULT_SPEED = 100;
+	
+	/** The Constant DEFAULT_UP_MOVEMENT. */
+	public static final int DEFAULT_UP_MOVEMENT = 1;
+	
+	/** The Constant DEFAULT_DOWN_MOVEMENT. */
+	public static final int DEFAULT_DOWN_MOVEMENT = 2;
+	
+	/** The Constant DEFAULT_RIGHT_MOVEMENT. */
+	public static final int DEFAULT_RIGHT_MOVEMENT = 3;
+	
+	/** The Constant DEFAULT_LEFT_MOVEMENT. */
+	public static final int DEFAULT_LEFT_MOVEMENT = 4;
+	
+	/** The monkeys. */
+	private ArrayList<Monkey> monkeys = Island.getInstance().getMonkeys();
+	
+	/** The pirates. */
+	private ArrayList<Pirate> pirates = Island.getInstance().getPirates();
+	
+	/** The monkey. default monkey */
+	private CrazyMonkey monkey;
+	
+	/** The monkey1. test collision */
+	private CrazyMonkey monkey1;
+	/** The monkey2. test collision */
+	private CrazyMonkey monkey2;
+	/** The monkey3. test collision */
+	private CrazyMonkey monkey3;
+	/** The monkey4. test collision */
+	private CrazyMonkey monkey4;
+	/** The monkey5. monkey for the test of collision with Pirates */
+	private CrazyMonkey monkeyPirate;
+	/** The monkeySea. monkey for the test of collision with Sea */
+	private CrazyMonkey monkeySea;
+	/** The monkeySea. monkey for the test of collision with Sea */
+	private CrazyMonkey monkeyRhum;
+	
+	
+	/** The monkey island. */
+	private Island monkeyIsland;
+	
+	/** The pirate. */
+	private Pirate pirate;
+	
+	/** The pirate 2. */
+	private Pirate pirate1;
+	
+	/** The pirate 3. */
+	private Pirate pirate2;
+	
+	/** The pirate 4. */
+	private Pirate pirate3;
+	
+	/** The pirate 4. */
+	private Pirate pirateSea1;
+	
+	/** The pirate 4. */
+	private Pirate pirateSea2;
+	
+	
+	/** The rhum. */
+	private Rhum rhum;
+	/** The rhum. */
+	private Rhum rhum1;
+	/** The rhum. */
+	private Rhum rhum2;
+	/** The rhum. */
+	private Rhum rhum3;
+	/**
+	 * Sets the up.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Before
+	public void setUp() throws Exception{
+		/*this.monkeyIsland = mock(Island.class);
+	    PowerMockito.mockStatic(Island.class);
+		
+		this.monkey = new CrazyMonkey(X_MONKEY, Y_MONKEY);
+		this.monkey1 = new CrazyMonkey(X_MONKEY+1, Y_MONKEY);
+		this.monkey2 = new CrazyMonkey(X_MONKEY-1, Y_MONKEY);
+		this.monkey3 = new CrazyMonkey(X_MONKEY, Y_MONKEY+1);
+		this.monkey4 = new CrazyMonkey(X_MONKEY, Y_MONKEY-1);
+		this.monkeyPirate = new CrazyMonkey(X_PIRATE, Y_PIRATE);
+		this.monkeySea = new CrazyMonkey(X_MONKEY_SEA, Y_MONKEY_SEA);
+		this.monkeyRhum = new CrazyMonkey(X_MONKEY_RHUM, Y_MONKEY_RHUM);
+		
+		this.pirate = new Pirate(X_PIRATE+1, Y_PIRATE);
+		this.pirate1 = new Pirate(X_PIRATE-1, Y_PIRATE);
+		this.pirate2 = new Pirate(X_PIRATE, Y_PIRATE-1);
+		this.pirate3 = new Pirate(X_PIRATE, Y_PIRATE+1);
+		this.pirateSea1 = new Pirate(X_PIRATE_SEA, Y_PIRATE_SEA);
+		this.pirateSea2 = new Pirate(X_PIRATE_SEA+1, Y_PIRATE_SEA-1);
+		this.rhum = new Rhum(true);
+		this.rhum1 = new Rhum(true);
+		this.rhum2 = new Rhum(true);
+		this.rhum3 = new Rhum(true);*/
+	}
+	
+	/**
+	 * Tear down.
+	 *
+	 * @throws Exception the exception
+	 */
+	@After
+	public void tearDown() throws Exception{
+		
+	}
+	
+	/**
+	 * Test movement random.
+	 *
+	 * @throws Exception the exception
+	 */
+	/* Teste du d�placement al�atoire du singe �rratique */
+	@Test
+	public void testMovementRandom() throws Exception {
+		/*when(this.monkeyIsland.getnbLines()).thenReturn(NB_LINES);
+		when(this.monkeyIsland.getnbRows()).thenReturn(NB_ROWS);
+		when(Island.getInstance()).thenReturn(monkeyIsland);
+		
+		int oldX = this.monkey.getCoordinateX();
+		int oldY = this.monkey.getCoordinateY();
+		
+		this.monkey.movementMonkey();
+				
+		//assertTrue(deplacementEffectue);
+		assertTrue("Error, random is null", (oldY == this.monkey.getCoordinateY() && oldX != this.monkey.getCoordinateX())
+			||	(oldY != this.monkey.getCoordinateY() && oldX == this.monkey.getCoordinateX()));
+		assertTrue("Error, random is too high", (oldY + 1) >= this.monkey.getCoordinateY());
+		assertTrue("Error, random is too low",  (oldY - 1) <= this.monkey.getCoordinateY());
+		assertTrue("Error, random is too high", (oldX + 1) >= this.monkey.getCoordinateX());
+		assertTrue("Error, random is too low",  (oldX - 1) <= this.monkey.getCoordinateX());*/
+	}
+	
+	/**
+	 * Test random.
+	 *
+	 * @throws Exception the exception
+	 */
+	
+	/* Teste que le singe se d�place bien al�atoirement */
+	@Test
+	public void testRandom() throws Exception {
+		
+		/*int up, down, left, right;
+		up=0;
+		down=0;
+		left=0;
+		right=0;
+		when(this.monkeyIsland.getnbLines()).thenReturn(NB_LINES);
+		when(this.monkeyIsland.getnbRows()).thenReturn(NB_ROWS);
+		when(Island.getInstance()).thenReturn(monkeyIsland);
+		
+		final int oldX = this.monkey.getCoordinateX();
+		int oldY = this.monkey.getCoordinateY();
+		
+		for (int i=0; i<100; i++){
+			
+			this.monkey.movementMonkey();
+			
+			if(this.monkey.getCoordinateY()==(oldY + 1)){
+				down++;
+			}else if(this.monkey.getCoordinateY()==(oldY - 1)){
+				up++;
+			}else if(this.monkey.getCoordinateX()==(oldX - 1)){
+				left++;
+			}else if(this.monkey.getCoordinateX()==(oldX + 1)){
+				right++;
+			}
+		}
+		assertEquals("Error, random is too high", down, 24);
+		assertEquals("Error, random is too high", up, 25);
+		assertEquals("Error, random is too high", right, 25);
+		assertEquals("Error, random is too high", left, 25);*/
+	}
+	
+	/**
+	 * Test movement right.
+	 *
+	 * @throws Exception the exception
+	 */
+	
+	/* Teste que le singe �rratique se d�palce bien � droite */
+	@Test
+	public void testMovementRight() {
+		
+		/*int right = 0;
+		
+		final int oldX = this.monkey.getCoordinateX();
+
+		try{
+			for (int i=0; i<10; i++){
+				if(this.monkey.getCoordinateX()==(oldX + 1)){
+					this.monkey.movementMonkey();
+					right++;
+				}
+			}
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertFalse("Error, he has not turned to right", right >= 1);*/
+	}
+	
+	/**
+	 * Test movement left.
+	 *
+	 * @throws Exception the exception
+	 */
+	
+	/* Teste que le singe �rratique se d�palce bien � gauche */
+	@Test
+	public void testMovementLeft() {
+		
+		/*int left = 0;
+		
+		final int oldX = this.monkey.getCoordinateX();
+
+		try{
+			for (int i=0; i<10; i++){
+				if(this.monkey.getCoordinateX()==(oldX + 1)){
+					this.monkey.movementMonkey();
+					left++;
+				}
+			}
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		
+		assertFalse("Error, he has not turned left", left >= 1);*/
+	}
+	
+	/**
+	 * Test movement up.
+	 *
+	 * @throws Exception the exception
+	 */
+	
+	/* Teste que le singe �rratique se d�palce bien en haut */
+	@Test
+	public void testMovementUp() {
+		
+		/*int up = 0;
+		
+		final int oldY = this.monkey.getCoordinateY();
+		
+		try{
+			for (int i=0; i<10; i++){
+				if(this.monkey.getCoordinateX()==(oldY + 1)){
+					this.monkey.movementMonkey();
+					up++;
+				}
+			}
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertFalse("Error, he has not went up", up >= 1);*/
+	}
+	
+	/**
+	 * Test movement down.
+	 *
+	 * @throws Exception the exception
+	 */
+	
+	/* Teste que le singe �rratique se d�palce bien en bas */
+	@Test
+	public void testMovementDown() {
+		
+		/*int down = 0;
+		
+		final int oldY = this.monkey.getCoordinateY();
+
+		try{
+			for (int i=0; i<10; i++){
+				if(this.monkey.getCoordinateX()==(oldY + 1)){
+					this.monkey.movementMonkey();
+					down++;
+				}
+			}
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertFalse("Error, he has not went down", down >= 1);*/
+	}
+	
+	@Test
+	public void testCollisionMonkeyMonkey() {
+		
+		/*final int oldX = this.monkey.getCoordinateX();
+		final int oldY = this.monkey.getCoordinateY();
+		
+		monkeys.add(this.monkey);
+		monkeys.add(this.monkey1);
+		monkeys.add(this.monkey2);
+		monkeys.add(this.monkey3);
+		monkeys.add(this.monkey4);
+		
+		when(this.monkeyIsland.collisionMonkey(this.monkey.getCoordinateX()+1, this.monkey.getCoordinateY())).thenReturn(monkey1);
+		when(this.monkeyIsland.collisionMonkey(this.monkey.getCoordinateX()-1, this.monkey.getCoordinateY())).thenReturn(monkey2);
+		when(this.monkeyIsland.collisionMonkey(this.monkey.getCoordinateX(), this.monkey.getCoordinateY()+1)).thenReturn(monkey3);
+		when(this.monkeyIsland.collisionMonkey(this.monkey.getCoordinateX(), this.monkey.getCoordinateY()-1)).thenReturn(monkey4);
+		
+		try{
+			this.monkey.movementMonkey();
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("Error, the monkey for the collsion with monkeys has moved", this.monkey.getCoordinateX(), oldX);
+		assertEquals("Error, the monkey for the collsion with monkeys has moved", this.monkey.getCoordinateY(), oldY);*/
+	}
+	
+	@Test
+	public void testCollisionMonkeyPirate() {
+		
+//		int oldX = this.monkeyPirate.getCoordinateX();
+//		int oldY = this.monkeyPirate.getCoordinateY();
+		
+		/*monkeys.add(this.monkeyPirate);
+		pirates.add(this.pirate);
+		pirates.add(this.pirate1);
+		pirates.add(this.pirate2);
+		pirates.add(this.pirate3);
+		
+		when(this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX()+1, this.monkeyPirate.getCoordinateY())).thenReturn(pirate);
+		when(this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX()-1, this.monkeyPirate.getCoordinateY())).thenReturn(pirate1);
+		when(this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX(), this.monkeyPirate.getCoordinateY()-1)).thenReturn(pirate2);
+		when(this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX(), this.monkeyPirate.getCoordinateY()+1)).thenReturn(pirate3);
+		
+		try{
+			this.monkeyPirate.movementMonkey();
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("error state", StatePirate.dead, this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX()+1, this.monkeyPirate.getCoordinateY()).getState());
+		assertEquals("error energy", 0, this.pirate.getEnergy());
+		assertEquals("error state", StatePirate.dead, this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX()-1, this.monkeyPirate.getCoordinateY()).getState());
+		assertEquals("error energy", 0, this.pirate1.getEnergy());
+		assertEquals("error state", StatePirate.dead, this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX(), this.monkeyPirate.getCoordinateY()-1).getState());
+		assertEquals("error energy", 0, this.pirate2.getEnergy());
+		assertEquals("error state", StatePirate.dead, this.monkeyIsland.collisionPirate(this.monkeyPirate.getCoordinateX(), this.monkeyPirate.getCoordinateY()+1).getState());
+		assertEquals("error energy", 0, this.pirate3.getEnergy());*/
+	}
+	
+
+	@Test
+	public void testCollisionMonkeyOnSeaCase() {
+			
+		/*final int oldX = this.monkeySea.getCoordinateX();
+		final int oldY = this.monkeySea.getCoordinateY();
+		
+		when(this.monkeyIsland.collisionPirate(this.monkeySea.getCoordinateX(), this.monkeySea.getCoordinateY()+1)).thenReturn(pirateSea1);
+		when(this.monkeyIsland.collisionPirate(this.monkeySea.getCoordinateX()-1, this.monkeySea.getCoordinateY())).thenReturn(pirateSea2);
+		
+		try{
+			this.monkeySea.movementMonkey();
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("Error, the Seamonkey has moved", this.monkeySea.getCoordinateX(), oldX);
+		assertEquals("Error, the Seamonkey has moved", this.monkeySea.getCoordinateY(), oldY);*/
+	}
+	
+	@Test
+	public void testCollisionMonkeyWithRhum() {
+		
+		/*when(this.monkeyIsland.collisionRhum(this.monkeyRhum.getCoordinateX(), this.monkeyRhum.getCoordinateY()-1)).thenReturn(rhum);
+		when(this.monkeyIsland.collisionRhum(this.monkeyRhum.getCoordinateX()-1, this.monkeyRhum.getCoordinateY())).thenReturn(rhum1);
+		when(this.monkeyIsland.collisionRhum(this.monkeyRhum.getCoordinateX(), this.monkeyRhum.getCoordinateY()+1)).thenReturn(rhum2);
+		when(this.monkeyIsland.collisionRhum(this.monkeyRhum.getCoordinateX()+1, this.monkeyRhum.getCoordinateY())).thenReturn(rhum3);
+		
+		try{
+			this.rhum.setPosition(5, 4);
+			this.rhum1.setPosition(4, 5);
+			this.rhum2.setPosition(5, 6);
+			this.rhum3.setPosition(6, 5);
+			this.monkeyRhum.movementMonkey();
+		} catch(Exception e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("Error, the bottle of rhum has dissapeared", this.rhum.getVisibility(), true);
+		assertEquals("Error, the bottle of rhum has dissapeared", this.rhum1.getVisibility(), true);
+		assertEquals("Error, the bottle of rhum has dissapeared", this.rhum2.getVisibility(), true);
+		assertEquals("Error, the bottle of rhum has dissapeared", this.rhum3.getVisibility(), true);*/
+
+	}
+}

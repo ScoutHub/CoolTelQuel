@@ -1,0 +1,42 @@
+#Configuration des paramètres
+
+IslandWidth=20
+IslandHeigth=20
+
+TreasureX = 7
+TreasureY = 8
+
+nbRhum = 5
+
+Rhumx0 = 4
+Rhumy0 = 4
+
+Rhumx1 = 15
+Rhumy1 = 15
+
+Rhumx2 = 15
+Rhumy2 = 4
+
+Rhumx3 = 4
+Rhumy3 = 15
+
+Rhumx4 = 10
+Rhumy4 = 10
+
+nbCrazyMonkey = 3
+
+CrazyMonkeyx0 = 2
+CrazyMonkeyy0 = 2
+
+CrazyMonkeyx1 = 18
+CrazyMonkeyy1 = 17
+
+CrazyMonkeyx2 = 9
+CrazyMonkeyy2 = 9
+
+NRJRhum = 15
+NRJMaxPirate = 100
+TMPRhum = 10000
+
+VitesseSingeErratique = 1000
+VitesseSingeChasseur = 1000

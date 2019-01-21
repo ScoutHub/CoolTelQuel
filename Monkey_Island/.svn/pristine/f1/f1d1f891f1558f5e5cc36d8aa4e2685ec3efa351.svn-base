@@ -1,0 +1,42 @@
+package fr.eseo.model.test;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import fr.eseo.model.CaseType;
+import fr.eseo.model.Configuration;
+import fr.eseo.model.Island;
+import fr.eseo.model.Treasure;
+
+public class TestConfig {
+	
+	Configuration conf;
+	
+	Island isl;
+	
+	@Before
+	public void setUp() throws Exception{	
+		
+		isl = Island.getInstance();
+		conf = Configuration.getInstance();
+		
+	}
+	
+	@Test
+	public void testInitIsland(){
+		conf.config();
+		assertEquals("Error type case", isl.getnbLines(), 20);
+		assertEquals("Error type case", isl.getCase()[19][19].getCaseType(), CaseType.sea);
+		assertEquals("Error type case", isl.getCase()[18][18].getCaseType(), CaseType.earth);
+		assertEquals("Error type case", Treasure.getTreasure().getCoordinateX(), 7);
+		//assertEquals("Error type case", isl.getCase()[18][18].getCaseType(), CaseType.earth);
+		assertEquals("Error type case", isl.getRhums().get(0).getCoordinateX(), 4);
+		assertEquals("Error type case", isl.getRhums().get(0).getCoordinateY(), 4);
+		assertEquals("Error type case", isl.getRhums().get(0).getEnergyQuantity(), 15);
+		assertEquals("Error type case", conf.getNRJMax(), 100);
+		
+	}
+	
+}

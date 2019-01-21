@@ -1,0 +1,46 @@
+package fr.eseo.model;
+
+import java.util.Random;
+
+// 
+/**
+ * The Class Treasure.
+ */
+
+public final class Treasure extends Item{
+	
+	private static Treasure t = null;
+	
+	
+	/**
+	 * Gets the treasure.
+	 *
+	 * @return the treasure
+	 */
+	public static Treasure getTreasure(){
+		if(t == null){
+			t = new Treasure();
+		}
+		return t;
+	}
+
+	/**
+	 * Instantiates a new treasure.
+	 */
+	private Treasure(){
+		super();
+	}
+	
+	/**
+	 * Position randomly the treasure on the island.
+	 * @throws CollisionException exception if collision with an entity or sea case or limits of island
+	 */
+	public void positionTreasure() throws CollisionException{
+
+		final Random rand = new Random();
+		final int x = rand.nextInt(Island.getInstance().getnbLines() -2)+1;
+		final int y = rand.nextInt(Island.getInstance().getnbRows() - 2)+1;
+		t.setPosition(x, y);
+
+	}
+}

@@ -1,0 +1,91 @@
+package fr.eseo.command;
+
+import java.awt.Point;
+import java.io.IOException;
+
+import fr.eseo.communication.Client;
+import fr.eseo.communication.ConnexionMonkeyIsland;
+import fr.eseo.communication.EntityObserver;
+import fr.eseo.communication.ProtocoleMonkeyIsland;
+import fr.eseo.communication.ServiceMonkeyIsland;
+import fr.eseo.model.Island;
+
+public class Action {
+	
+	private String message;
+	
+	private EntityObserver ent;
+	
+	private ConnexionMonkeyIsland connexion;
+	
+	/**
+	 * Serveur MonkeyIsland du client.
+	 */
+	private ServiceMonkeyIsland monkeyIsland;
+	
+	
+	private Client client;
+	
+	public Action(){
+	}
+	
+	public Action(ServiceMonkeyIsland monkeyIsland, Client client, String message){
+		this.message = message;
+		this.monkeyIsland = monkeyIsland;
+		this.client = client;
+	}
+	
+	public void inscription(){
+		ent = new EntityObserver(client);
+		this.monkeyIsland.inscriptionCanal(client); 
+		Island.getInstance().addPirate();
+		Island.getInstance().getPirates().get(0).addObserver(ent);
+		client.envoieMessage(ProtocoleMonkeyIsland.formatteMessageIndicationCarte(Island.getInstance().getCase()));	
+		client.envoieMessage(ProtocoleMonkeyIsland.MESSAGE_INSCRIPTION);
+		client.envoieMessage(ProtocoleMonkeyIsland.formaterIdentificationPirate(Island.getInstance().getPirates()));
+		client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionRhum(Island.getInstance().getRhums()));
+	}
+	public void movePirate(){
+		try{
+			final Point p = ProtocoleMonkeyIsland.commandeDuDeplacement(message);
+			Island.getInstance().getPirates().get(0).movementPirate(p.x, p.y);
+		}catch (Exception e) {
+			client.envoieMessage(ProtocoleMonkeyIsland.formaterRefusDeplacementPirate());
+			System.err.println(e.getMessage());
+		}
+	}
+	public void demandUp(){
+		try {
+			connexion.ecrire("/D -1 0");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void demandDown(){
+		try {
+			connexion.ecrire("/D 0 1");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void demandRight(){
+		try {
+			connexion.ecrire("/D 1 0");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void demandLeft(){
+		try {
+			connexion.ecrire("/D -1 0");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}
+	

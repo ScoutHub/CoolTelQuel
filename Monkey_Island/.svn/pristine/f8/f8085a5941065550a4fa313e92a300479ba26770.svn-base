@@ -1,0 +1,181 @@
+package fr.eseo.model;
+
+/**
+ * The Class Pirate.
+ */
+public class Pirate extends Entity {
+	
+	/** The state. */
+	private StatePirate state;
+	
+	/** The energy. */
+	private int energy;
+	
+	/** The Constant MAX_ENERGY. */
+	public static final int MAX_ENERGY = 100;
+	
+	/** The Constant DEFAULT_STATE_PIRATE. */
+	public static final StatePirate DEFAULT_STATE_PIRATE = StatePirate.sober;
+	
+	/**
+	 * Instantiates a new pirate.
+	 *
+	 * @param x Coordinate x of the pirate
+	 * @param y Coordinate y of the pirate
+	 */
+	public Pirate(int x, int y){
+		super(x, y);
+		this.state = DEFAULT_STATE_PIRATE;
+		this.energy = MAX_ENERGY;
+	}
+	
+	/**
+	 * Instantiates a new pirate.
+	 *
+	 * @param state the state of the pirate
+	 * @param x Coordinate x of the pirate
+	 * @param y Coordinate y of the pirate
+	 */
+	public Pirate(StatePirate state, int x, int y){
+		super(x, y);
+		this.state = state;
+		this.energy = MAX_ENERGY;
+	}
+	
+	/**
+	 * Instantiates a new pirate.
+	 *
+	 * @param energy energy of the pirate
+	 * @param x Coordinate x of the pirate
+	 * @param y Coordinate y of the pirate
+	 */
+	public Pirate(int energy, int x, int y){
+		super(x, y);
+		this.state = DEFAULT_STATE_PIRATE;
+		this.energy = energy;
+	}
+	
+	/**
+	 * Instantiates a new pirate.
+	 *
+	 * @param state the state
+	 * @param energy the energy
+	 * @param x Coordinate x of the pirate
+	 * @param y Coordinate y of the pirate
+	 */
+	public Pirate(StatePirate state, int energy, int x, int y){
+		super(x, y);
+		this.state = state;
+		this.energy = energy;
+	}
+	
+	
+	/**
+	 * Gets the state.
+	 *
+	 * @return Retourne l'état du pirate
+	 */
+	public StatePirate getState(){
+		return this.state;
+	}
+	
+	/**
+	 * Sets the state.
+	 *
+	 * @param state Modifie l'état du pirate
+	 */
+	public void setState(StatePirate state){
+		this.state = state;
+		this.setChanged();
+		this.notifyObservers(state);
+	}
+	
+	/**
+	 * Gets the energy.
+	 *
+	 * @return Retourne l'énergie du pirate
+	 */
+	public int getEnergy(){
+		return this.energy;
+		
+	}
+	
+	/**
+	 * Sets the energy.
+	 *
+	 * @param energy Modifie l'énergie du pirate
+	 */
+	public void setEnergy(int energy){
+		this.energy = energy;
+		/*this.setChanged();
+		this.notifyObservers(this.energy);*/
+	}
+	
+	/**
+	 * Méthode permettant de déplacer un pirate sur l'île.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @throws CollisionException collision exception with an item or an entity or a sea case
+	 */
+	public void movementPirate(int x, int y) throws CollisionException{
+		if(x<-1 || x>1 || y<-1 || y>1 || x==-1 && y==1 
+				|| x==1 && y==-1 || x==1 && y==1 || x==-1 && y==-1){
+			throw new IllegalArgumentException("MOVEMENT not allowed");
+		} else if(Island.getInstance() != null){
+			if(this.getEnergy() > 0){
+				if(this.getCoordinateX()+x >= Island.getInstance().getnbRows()-1 
+						|| this.getCoordinateX()+x <= 0 
+						|| this.getCoordinateY()+y >= Island.getInstance().getnbLines()-1
+						|| this.getCoordinateY()+y <= 0){
+					throw new CollisionException("Limits of island", CollisionException.COLLISION_EXIT_ISLAND);
+				} else if(Island.getInstance().getCase()[this.getCoordinateX()+x][this.getCoordinateY()+y].getCaseType()
+						== CaseType.sea){
+					throw new CollisionException("Collision sea",
+							CollisionException.COLLISION_SEA);
+				} else if(Island.getInstance().collisionRhum(this.getCoordinateX()+x, this.getCoordinateY()+y) != null){
+					this.energy = this.energy+Rhum.DEFAULT_ENERGY_QUANTITY;	
+					Island.getInstance().collisionRhum(this.getCoordinateX()+x, this.getCoordinateY()+y).setVisibility(false);
+					if(x != 0){
+						this.setCoordinateX(this.getCoordinateX()+x);
+					}
+					if(y != 0){
+						this.setCoordinateY(this.getCoordinateY()+y);
+					}
+					
+				} else if((Island.getInstance().collisionPirate(this.getCoordinateX()+x, this.getCoordinateY()+y)!=null) 
+					&& (Island.getInstance().collisionPirate(this.getCoordinateX()+x, this.getCoordinateY()+y).getState() 
+						!= StatePirate.dead)){
+					throw new CollisionException("There is already a pirate",
+							CollisionException.COLLISION_PIRATE);
+				} else if(this.getCoordinateX()+x == Treasure.getTreasure().getCoordinateX()
+							&& this.getCoordinateY()+y == Treasure.getTreasure().getCoordinateY()){
+					Treasure.getTreasure().setFound(true);
+					Treasure.getTreasure().setVisibility(true);
+					
+				} else if(Island.getInstance().collisionMonkey(this.getCoordinateX()+x, this.getCoordinateY()+y) != null){
+					this.setState(StatePirate.dead);
+					this.setEnergy(0);
+					if(x != 0){
+						this.setCoordinateX(this.getCoordinateX()+x);
+					}
+					if(y != 0){
+						this.setCoordinateY(this.getCoordinateY()+y);
+					}
+				} else if(this.getState() != StatePirate.dead){
+					this.setEnergy(this.energy-1);
+					if(x != 0){
+						this.setCoordinateX(this.getCoordinateX()+x);
+					}
+					if(y != 0){
+						this.setCoordinateY(this.getCoordinateY()+y);
+					}
+				}
+			}
+		} else if(this.getEnergy() == 0){
+				this.setState(StatePirate.dead);
+		}
+	}
+	
+	
+}

@@ -1,0 +1,188 @@
+package fr.eseo.model.test;
+
+import static org.junit.Assert.*;
+
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import static org.mockito.Mockito.*;
+
+import fr.eseo.model.*;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Island.class)
+
+// 
+/**
+ * The Class TestTreasure.
+ */
+
+public class TestTreasure {
+	
+	/** The Constant NB_ROWS. */
+	/* Largeur de l'�le */
+	private static final int NB_ROWS = 30;
+	
+	/** The Constant NB_LINES. */
+	/* Longueur de l'�le */
+	private static final int NB_LINES = 30;
+	
+	/** The isl. */
+	private Island isl;
+	private Treasure tre;
+	private Case[][] plateau;
+	private Pirate pir;
+	private Monkey monk;
+	/**
+	 * Sets the up.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Before
+	public void setUp(){	
+		this.tre = Treasure.getTreasure();
+		this.isl = mock(Island.class);
+		this.plateau = new Case[NB_LINES ][NB_ROWS];
+		this.pir = new Pirate(5, 5);
+		this.monk = new CrazyMonkey(7, 7);
+	    PowerMockito.mockStatic(Island.class);
+		when(Island.getInstance()).thenReturn(isl);
+		when(this.isl.getnbLines()).thenReturn(NB_LINES);
+		when(this.isl.getnbRows()).thenReturn(NB_ROWS);
+		for(int i = 0; i< NB_LINES; i++){
+			for(int j = 0; j< NB_ROWS; j++){
+				if(((i == 0 || i == NB_LINES-1) && j < NB_ROWS) || ((j == 0 || j == NB_ROWS-1)&& i < NB_LINES )){
+					this.plateau[i][j] = new Case(i, j, CaseType.sea);
+				}else{
+					this.plateau[i][j] = new Case(i, j, CaseType.earth);
+				}
+			}
+		}
+		when(this.isl.getCase()).thenReturn(plateau);
+		when(this.isl.collisionPirate(5, 5)).thenReturn(pir);
+		when(this.isl.collisionMonkey(7, 7)).thenReturn(monk);
+
+	}
+    
+	/**
+	 * Test position tre.
+	 * @throws CollisionException 
+	 */
+	@Test
+	public void testRandomTre(){
+		int position = 0;
+		int errorSea = 0;
+		int errorIsl = 0;
+		int errorPir = 0;
+		int errorMonk = 0;
+		for (int i = 0; i< 2000; i++){
+			try {
+				this.tre.positionTreasure();
+				if((tre.getCoordinateX() > 0 && tre.getCoordinateX() < NB_LINES-1) && (tre.getCoordinateY() > 0 && tre.getCoordinateY() < NB_ROWS-1)){
+					position++;
+				}
+			} catch (CollisionException e) {
+				if(e.getExceptionCause() == CollisionException.COLLISION_SEA){
+					errorSea++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_EXIT_ISLAND){
+					errorIsl++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_PIRATE){
+					errorPir++;
+				}else if(e.getExceptionCause() == CollisionException.COLLISION_MONKEY){
+					errorMonk++;
+				}
+			}
+		}
+		assertEquals("Error, miss some positions", 2000-errorMonk-errorPir, position);
+		assertTrue("Error, at least one collision with pirate", errorPir >= 1);
+		assertTrue("Error, at least one collision with monkey", errorMonk >= 1);
+		assertEquals("Error, treasure on case sea", 0, errorSea);
+		assertEquals("Error, exit Island !!!", 0, errorIsl);
+	}
+	
+	
+	@Test
+	public void testPositionTreOutIsl(){
+		tre.setCoordinateX(0);
+		tre.setCoordinateY(0);
+		try {
+			this.tre.setPosition(30, 30);
+			fail("Should throw exception when out of Island");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("exit island!!"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_EXIT_ISLAND);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.tre.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.tre.getCoordinateY());
+	}
+	
+	@Test
+	public void testPositionTreSeaCase(){
+		tre.setCoordinateX(0);
+		tre.setCoordinateY(0);
+		try {
+			this.tre.setPosition(0, 10);
+			fail("Should throw exception when case sea");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case sea not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_SEA);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.tre.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.tre.getCoordinateY());
+	}
+	
+	/** 
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testPositionTrePirateCase(){
+		tre.setCoordinateX(0);
+		tre.setCoordinateY(0);
+		try {
+			this.tre.setPosition(5, 5);
+			fail("Should throw exception when on Pirate");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case pirate not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_PIRATE);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.tre.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.tre.getCoordinateY());
+	}
+	
+	/** 
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testPositionTreMonkeyCase(){
+		tre.setCoordinateX(0);
+		tre.setCoordinateY(0);
+		try {
+			this.tre.setPosition(7, 7);
+			fail("Should throw exception when on Monkey");
+		}catch (CollisionException e){
+			assertTrue(e.getMessage().contains("Case monkey not allowed"));
+			assertTrue(e.getExceptionCause()==CollisionException.COLLISION_MONKEY);
+		}
+		assertEquals("shouldn t have coordinate X", 0, this.tre.getCoordinateX());
+		assertEquals("shouldn t have coordinate Y", 0, this.tre.getCoordinateY());
+	}
+	
+	@Test
+	public void testPositionTre(){
+		tre.setCoordinateX(0);
+		tre.setCoordinateY(0);
+		try {
+			this.tre.setPosition(10, 15);
+		}catch (CollisionException e){
+			fail("Should not have thrown any exception");
+		}
+		assertEquals("Not in right place X", 10, this.tre.getCoordinateX());
+		assertEquals("Not in right place Y", 15, this.tre.getCoordinateY());
+	}
+}

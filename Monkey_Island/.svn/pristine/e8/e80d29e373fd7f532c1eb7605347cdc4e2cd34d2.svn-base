@@ -1,0 +1,12 @@
+package fr.eseo.command;
+
+public class DemandLeft implements Command{
+	Action action;
+	  public DemandLeft(Action action){
+	    this.action = action;
+	  }
+	@Override
+	public void execute() {
+		action.demandLeft();
+	}
+}

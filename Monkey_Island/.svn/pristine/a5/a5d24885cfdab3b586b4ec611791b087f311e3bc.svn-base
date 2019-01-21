@@ -1,0 +1,62 @@
+package fr.eseo.model;
+
+import java.util.Random;
+
+// 
+/**
+ * The Class Treasure.
+ */
+
+public final class Treasure extends Item{
+	
+	private boolean found;
+	
+	private static Treasure t = null;
+	
+	
+	/**
+	 * Gets the treasure.
+	 *
+	 * @return the treasure
+	 */
+	public static Treasure getTreasure(){
+		if(t == null){
+			t = new Treasure();
+		}
+		return t;
+	}
+
+	/**
+	 * Instantiates a new treasure.
+	 */
+	private Treasure(){
+		super();
+	}
+	
+	/**
+	 * method to change the visibility of the treasure. 
+	 * @param found boolean true if the treasure is found, else false.
+	 */
+	
+	public void setFound(boolean found){
+		this.found=found;
+	}
+	
+	
+	/**
+	 * 
+	 * @return la visibilité du tresor. 
+	 */	  
+	public boolean getFound(){
+		return this.found;
+	} 
+	
+	public void positionTreasure() throws CollisionException{
+
+		final Random rand = new Random();
+		final int x = rand.nextInt(Island.getInstance().getnbLines() -2)+1;
+		final int y = rand.nextInt(Island.getInstance().getnbRows() - 2)+1;
+		t.setPosition(x, y);
+
+	}
+}

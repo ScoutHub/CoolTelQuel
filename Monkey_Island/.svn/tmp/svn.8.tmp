@@ -1,0 +1,151 @@
+/*
+ * 
+ */
+package fr.eseo.model;
+
+import java.awt.event.ActionEvent;
+import java.util.Random;
+
+// 
+/**
+ * The Class CrazyMonkey.
+ */
+public class CrazyMonkey extends Monkey{
+	
+	/** The Constant DEFAULT_UP_MOVEMENT. */
+	public static final int DEFAULT_UP_MOVEMENT = 1;
+	
+	/** The Constant DEFAULT_DOWN_MOVEMENT. */
+	public static final int DEFAULT_DOWN_MOVEMENT = 2;
+	
+	/** The Constant DEFAULT_RIGHT_MOVEMENT. */
+	public static final int DEFAULT_RIGHT_MOVEMENT = 3;
+	
+	/** The Constant DEFAULT_LEFT_MOVEMENT. */
+	public static final int DEFAULT_LEFT_MOVEMENT = 4;
+	
+	
+	/** The Constant DEFAULT_STATE_PIRATE. */
+	public static final StatePirate DEFAULT_STATE_PIRATE = StatePirate.sober;
+
+	/**
+	 * Instantiates a new crazy monkey.
+	 *
+	 * @param x the coordinate x of the crazy monkey
+	 * @param y the coordinate y of the crazy monkey
+	 */
+	public CrazyMonkey(int x, int y){
+		super(Monkey.DEFAULT_SPEED, x, y);
+	}
+	
+	/**
+	 * Instantiates a new crazy monkey.
+	 *
+	 * @param speed the speed
+	 * @param x the coordinate x of the crazy monkey
+	 * @param y the coordinate y of the crazy monkey
+	 */
+	public CrazyMonkey(int speed, int x, int y){
+		super(speed, x, y);
+	}
+
+	/**
+	 * Timer monkey.
+	 *
+	 * @param speed the speed
+	 * @throws InterruptedException the interrupted exception
+	 */
+	public void timerMonkey(int speed) throws InterruptedException{
+		
+		boolean finished = false;
+		try{
+			while(!finished){
+				Thread.sleep(1500 - speed*10);
+				finished = true;
+			}
+		} catch (InterruptedException exception){
+			System.out.println("interruption timer crazy monkey");
+		}
+	}
+	
+	/**
+	 * MOVEMENT monkey.
+	 *
+	 * @param speed the speed
+	 * @throws InterruptedException 
+	 */
+	public void movementMonkey(){
+	
+		final Random rand = new Random();
+		final int nbAl = rand.nextInt(4) + 1;
+		
+		if(Island.getInstance() != null){
+			if((((this.getCoordinateY()-1)<0) && (nbAl==DEFAULT_UP_MOVEMENT)) || 
+				(((this.getCoordinateY()+1)>(Island.getInstance().getnbRows()-1)) && (nbAl==DEFAULT_DOWN_MOVEMENT)) ||
+				(((this.getCoordinateX()+1)>(Island.getInstance().getnbLines()-1)) && (nbAl==DEFAULT_RIGHT_MOVEMENT)) ||
+				(((this.getCoordinateX()-1)<0) && (nbAl==DEFAULT_LEFT_MOVEMENT))){
+				movementMonkey();
+		}
+		if (Island.getInstance().collisionMonkey(this.getCoordinateX()-1, this.getCoordinateY())!=null){
+			movementMonkey();
+		}else if(Island.getInstance().collisionMonkey(this.getCoordinateX()+1, this.getCoordinateY())!=null){
+			movementMonkey();
+		}else if(Island.getInstance().collisionMonkey(this.getCoordinateX(), this.getCoordinateY()-1)!=null){
+			movementMonkey();
+		}else if(Island.getInstance().collisionMonkey(this.getCoordinateX(), this.getCoordinateY()+1)!=null){
+			movementMonkey();
+		}else if(Island.getInstance().collisionPirate(this.getCoordinateX()+1, this.getCoordinateY())!=null){
+			Island.getInstance().collisionPirate(this.getCoordinateX()+1, this.getCoordinateY()).setState(StatePirate.dead);
+			Island.getInstance().collisionPirate(this.getCoordinateX()+1, this.getCoordinateY()).setEnergy(0);
+			movementMonkey();
+		}else if(Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()-1)!=null){
+			Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()-1).setState(StatePirate.dead);
+			Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()-1).setEnergy(0);
+			movementMonkey();
+		}else if(Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()+1)!=null){
+			Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()+1).setState(StatePirate.dead);
+			Island.getInstance().collisionPirate(this.getCoordinateX(), this.getCoordinateY()+1).setEnergy(0);
+			movementMonkey();
+		} else if(Island.getInstance().collisionPirate(this.getCoordinateX()-1, this.getCoordinateY()) != null){
+			Island.getInstance().collisionPirate(this.getCoordinateX()-1, this.getCoordinateY()).setState(StatePirate.dead);
+			Island.getInstance().collisionPirate(this.getCoordinateX()-1, this.getCoordinateY()).setEnergy(0);
+			movementMonkey();
+		}
+		
+		switch(nbAl){
+		
+		case DEFAULT_UP_MOVEMENT:
+			if(this.getCoordinateY()-1>= 0){
+				this.setCoordinateY(this.getCoordinateY()-1);
+			}
+			break;
+		case DEFAULT_DOWN_MOVEMENT:
+			if(this.getCoordinateY()+1<=Island.getInstance().getnbLines()){
+				this.setCoordinateY(this.getCoordinateY()+1);
+			}
+			
+			break;
+		case DEFAULT_RIGHT_MOVEMENT:
+			if(this.getCoordinateX()+1<=Island.getInstance().getnbRows()){
+				this.setCoordinateX(this.getCoordinateX()+1);
+			}
+
+			break;
+		case DEFAULT_LEFT_MOVEMENT:
+			if(this.getCoordinateX()-1>= 0){	
+				this.setCoordinateX(this.getCoordinateX()-1);
+			}
+
+			break;
+		default:
+			break;
+		}
+		
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+			this.movementMonkey();
+	}
+}

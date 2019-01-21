@@ -1,0 +1,10 @@
+package fr.eseo.model;
+
+/**
+ * The Class Manager.
+ */
+public abstract class Manager {
+	
+
+
+}

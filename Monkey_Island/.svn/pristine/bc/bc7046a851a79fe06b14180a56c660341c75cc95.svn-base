@@ -1,0 +1,267 @@
+package fr.eseo.model;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * The Class Island.
+ */
+public class Island {
+	
+	/** The nb rows. */
+	private int nbRows;
+	
+	/** The nb lines. */
+	private int nbLines;
+	
+	/** The cases. */
+	private Case[][] cases;
+	
+	/** The Constant DEFAULT_NB_ROWS. */
+	public static final int DEFAULT_NB_ROWS = 10;
+	
+	/** The Constant DEFAULT_NB_LINES. */
+	public static final int DEFAULT_NB_LINES = 10;
+
+	/** The pirates. */
+	private ArrayList<Pirate> pirates;
+	
+	/** The monkeys. */
+	private ArrayList<Monkey> monkeys;
+
+	/** The rhum bottles. */
+	private ArrayList<Rhum> rhums;
+	
+	/** The island. */
+	private static Island island = null;
+	
+	/**
+	 * Gets the single instance of Island.
+	 *
+	 * @return single instance of Island
+	 */
+	public static Island getInstance(){
+		if(island == null){
+			island = new Island();
+		}
+		return island;
+	}
+	
+	/**
+	 * Instantiates a new island.
+	 */
+	public Island(){
+		this.nbRows = DEFAULT_NB_ROWS;
+		this.nbLines = DEFAULT_NB_LINES;
+		this.cases = new Case[DEFAULT_NB_ROWS][DEFAULT_NB_LINES];
+		this.pirates = new ArrayList<Pirate>();
+		this.monkeys = new ArrayList<Monkey>();
+		this.rhums = new ArrayList<Rhum>();
+	}
+	
+	/**
+	 * Set a new dimension of the island.
+	 * @param nbLines the number of lines of the island
+	 * @param nbRows the number of rows of the island
+	 */
+	public void setIsland(int nbLines, int nbRows){
+		this.nbRows = nbRows;
+		this.nbLines = nbLines;
+		this.cases = new Case[nbRows][nbLines];
+		this.initIsland();
+	}
+	
+	/**
+	 * Gets the nb rows.
+	 *
+	 * @return the nb rows
+	 */
+	public int getnbRows(){
+		return this.nbRows;
+	}
+	
+	/**
+	 * Sets the nb rows.
+	 *
+	 * @param nbRows the new nb rows
+	 */
+	public void setnbRows(int nbRows){
+		this.nbRows = nbRows;
+	}
+	
+	/**
+	 * Gets the nb lines.
+	 *
+	 * @return the nb lines
+	 */
+	public int getnbLines(){
+		return this.nbLines;
+	}
+	
+	
+	/**
+	 * Sets the nb lines.
+	 *
+	 * @param nbLines the new nb lines
+	 */
+	public void setnbLines(int nbLines){
+		this.nbLines = nbLines;
+	}
+	
+	/**
+	 * Handle the exceptions when the coordinates of the pirate are set.
+	 * @param x the coordinate x of the pirate
+	 * @param y the coordinate y of the pirate
+	 * @return erreur 0 if there is no error, 1 if there is a collision with an item or an entity
+	 */
+	public int setPositionPir(int x, int y){
+		int erreur = 0;
+		if(x < 0 || x > Island.getInstance().getnbLines()-1 || y < 0 || y > Island.getInstance().getnbRows()-1){
+			 erreur = 1;
+		}else if(Island.getInstance().getCase()[x][y].getCaseType() == CaseType.sea){
+			erreur = 1;
+		}else if(Island.getInstance().collisionPirate(x, y) != null){
+			erreur = 1;
+		}else if(Island.getInstance().collisionMonkey(x, y) != null){
+			erreur = 1;
+		}else if(Island.getInstance().collisionRhum(x, y) != null){
+			erreur = 1;
+		}else if(Treasure.getTreasure().getCoordinateX() == x && Treasure.getTreasure().getCoordinateY() == y){
+			erreur = 1;
+		}else{
+			erreur = 0;
+		}
+		return erreur;
+	}
+	
+	/**
+	 * Add a new pirate to the island.
+	 */
+	public void addPirate(){
+		Pirate p = null;
+		int x, y;
+		do{
+			final Random rand = new Random();
+			x = rand.nextInt(Island.getInstance().getnbLines() -2)+1;
+			y = rand.nextInt(Island.getInstance().getnbRows() - 2)+1;
+		}while(setPositionPir(x, y) == 1);
+		p = new Pirate(Configuration.getInstance().getNRJMax(), x, y);
+		Island.getInstance().pirates.add(p);
+	}
+	/**
+	 * Gets the pirates.
+	 *
+	 * @return the pirates
+	 */
+	public ArrayList<Pirate> getPirates(){
+		return this.pirates;
+	}
+	
+		
+	/**
+	 * Gets the monkeys.
+	 *
+	 * @return the monkeys
+	 */
+	public ArrayList<Monkey> getMonkeys(){
+		return this.monkeys;
+	}
+	
+	/**
+	 * Gets the rhum bottles.
+	 *
+	 * @return the rhum bottles
+	 */
+	public ArrayList<Rhum> getRhums(){
+		return this.rhums;
+	}
+
+	/**
+	 * Set the cases of the island.
+	 * @param nbRows the number of rows of the island
+	 * @param nbLines the number of lines of the island
+	 */
+	public void setLengthCase(int nbRows, int nbLines){
+		this.cases = new Case[nbRows][nbLines];
+	}
+	
+	/**
+	 * Get the cases of the island.
+	 * @return cases the cases of the island
+	 */
+	public Case[][] getCase(){
+		return this.cases;
+	}
+
+	/**
+	 * Initialize the island, dimension and type of each case.
+	 */
+	public void initIsland(){
+		for(int i = 0; i< getnbLines(); i++){
+			for(int j = 0; j< getnbRows(); j++){
+				if(((i == 0 || i == getnbLines()-1) && j < getnbRows()) || ((j == 0 || j == getnbRows()-1)&& i < getnbLines())){
+					this.cases[i][j] = new Case(i, j, CaseType.sea);
+				}else{
+					this.cases[i][j] = new Case(i, j, CaseType.earth);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Notice if the current entity have the same coordinates that a pirate.
+	 *
+	 * @param x the coordinate x of the entity
+	 * @param y the y
+	 * @return the pirate
+	 */
+	public Pirate collisionPirate(int x, int y){
+		Pirate p = null;
+		if(this.pirates.isEmpty() == false){
+			for(Pirate pirate: this.pirates){
+				if(pirate.getCoordinateX() == x && pirate.getCoordinateY() == y && pirate.getState()!=StatePirate.dead){
+					p = pirate;
+				}
+			}
+		}
+		return p;
+	}
+	
+	/**
+	 * Notice if the current entity have the same coordinates that a monkey.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @return the monkey
+	 */
+	public Monkey collisionMonkey(int x, int y){
+		Monkey m = null;
+		if(this.monkeys.isEmpty() == false){
+			for(Monkey monkey : this.monkeys){
+				if(monkey.getCoordinateX() == x && monkey.getCoordinateY() == y ){
+					m = monkey;
+				}
+			} 
+		}
+		return m;
+	}
+	
+	/**
+	 * Notice if the current entity have the same coordinates that a rhum.
+	 * 
+	 * @param x position x
+	 * @param y position y  
+	 * @return the rhum.
+	 */
+	public Rhum collisionRhum(int x, int y){
+		Rhum r = null;
+		if(this.rhums.isEmpty() == false){
+			for(Rhum rhum : this.rhums){
+				if(rhum.getCoordinateX() == x && rhum.getCoordinateY() == y){
+					r = rhum;
+				}
+			}
+		}
+		return r;
+	}
+}

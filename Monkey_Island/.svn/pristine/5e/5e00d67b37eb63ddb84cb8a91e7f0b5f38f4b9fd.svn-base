@@ -1,0 +1,90 @@
+package fr.eseo.communication;
+
+import java.io.IOException;
+import java.net.Socket;
+
+/**
+ * Classe de communication avec un client de MonkeyIsland. 
+ * 
+ * @version 2.0
+ * @author Matthias Brun
+ * 
+ * @see ClientMonkeyIsland
+ */
+public class CommunicationMonkeyIsland{
+	/**
+	 * Connexion avec l'entité Monix du client utilisateur de la communication.
+	 */
+	private ConnexionMonkeyIsland connexion;
+
+	
+	/**
+	 * Constructeurs de la communication avec une entité de MonkeyIsland d'un client.
+	 *
+	 * @param socket la socket de communication avec l'entité de MonkeyIsland du client.
+	 * 
+	 * @throws IOException exception d'entrée/sortie.
+	 */
+	public CommunicationMonkeyIsland(Socket socket) throws IOException{
+		try {
+			this.connexion = new ConnexionMonkeyIsland(socket);
+		}catch (IOException ex) {
+			System.err.println("Problème de mise en place de la communication avec MonkeyIsland.");
+			throw ex;
+		}
+	}
+
+	
+	/**
+	 * Envoie d'un message à un client MonkeyIsland.
+	 * 
+	 * @param message le message à envoyer.
+	 * 
+	 * @throws IOException exception d'entrée/sortie.
+	 */
+	public void envoieMessage(String message) throws IOException{
+		try {
+			this.connexion.ecrire(message);
+		}catch (IOException ex) {
+			System.err.println("Problème de communication avec un client (envoie de message).");
+			throw ex;
+		}
+	}
+	
+	/**
+	 * Envoie un message d'erreur au client.
+	 *
+	 * @param message le message à envoyer.
+	 * 
+	 * @throws IOException exception d'entrée/sortie.
+	 */
+	public void envoieMessageErreur(String message) throws IOException{
+		//this.envoieMessage(/*TODO*/);
+	}	
+	
+	/**
+	 * Réception d'un message du client.
+	 * 
+	 * @return le message reçu.
+	 * 
+	 * @throws IOException exception d'entrée/sortie.
+	 */
+	public String recoitMessage() throws IOException {
+		try {
+			return this.connexion.lire();
+		}catch (IOException ex) {
+			System.err.println("Problème de communication avec un client (réception de message).");
+			throw ex;
+		}
+	}
+	
+	/**
+	 * Termine la communication avec le client.
+	 * 
+	 * <p>Ferme la connexion.</p>
+	 */
+	public void termine(){
+		this.connexion.ferme();
+	}
+}
+

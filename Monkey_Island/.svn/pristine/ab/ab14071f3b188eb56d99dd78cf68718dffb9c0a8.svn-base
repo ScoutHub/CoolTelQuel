@@ -1,0 +1,15 @@
+package fr.eseo.model.command;
+
+import fr.eseo.model.CollisionException;
+import fr.eseo.model.Island;
+import fr.eseo.model.Pirate;
+
+public class CommandDeplacement implements Command {
+	Action action;
+	public CommandDeplacement(Action action){
+	  this.action = action;
+	}
+	public void execute(){
+	  action.movePirate();
+	}
+}

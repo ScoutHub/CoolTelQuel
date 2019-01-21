@@ -1,0 +1,90 @@
+package fr.eseo.model;
+
+
+/**
+ * The Class Item.
+ */
+public abstract class Item extends Entity{
+	
+	
+	/** The visibility. */
+	private boolean visibility;
+	
+	/**
+	 * Instantiates a new object.
+	 */
+	public Item(){
+		super();
+		this.visibility = false;
+	}
+	
+	/**
+	 * Instantiates a new object.
+	 *
+	 * @param visibility the visibility
+	 */
+	public Item(boolean visibility){
+		super();
+		this.visibility = visibility;
+	}
+	
+	/**
+	 * Instantiates a new item.
+	 *
+	 * @param x the coordinate x of the item
+	 * @param y the coordinate y of the item
+	 * @param visibility the visibility
+	 */
+	public Item(int x, int y, boolean visibility){
+		super(x, y);
+		this.visibility = visibility;
+	}
+	
+	
+	/**
+	 * Gets the visibility.
+	 *
+	 * @return the visibility
+	 */
+	public boolean getVisibility(){
+		return this.visibility;
+	}
+	
+	/**
+	 * Sets the visibility.
+	 *
+	 * @param visibility the new visibility
+	 */
+	public void setVisibility(boolean visibility){
+		this.visibility = visibility;
+		this.setChanged();
+		this.notifyObservers(this.visibility);
+	}
+	
+	/**
+	 * Set the coordinates of an item and handle the exception of creation.
+	 * 
+	 * @param x the coordinate x of the item
+	 * @param y the coordinate y of the item
+	 * @throws CollisionException exception if collision with an entity or a sea case or limits of island
+	 */
+	public void setPosition(int x, int y) throws CollisionException{
+		if(x < 0 || x > Island.getInstance().getnbLines()-1 || y < 0 || y > Island.getInstance().getnbRows()-1){
+			 throw new CollisionException("exit island!!",
+			         CollisionException.COLLISION_EXIT_ISLAND);
+		}else if(Island.getInstance().getCase()[x][y].getCaseType() == CaseType.sea){
+			 throw new CollisionException("Case sea not allowed",
+			         CollisionException.COLLISION_SEA);
+		}else if(Island.getInstance().collisionPirate(x, y) != null){
+			 throw new CollisionException("Case pirate not allowed",
+			         CollisionException.COLLISION_PIRATE);
+		}else if(Island.getInstance().collisionMonkey(x, y) != null){
+			 throw new CollisionException("Case monkey not allowed",
+			         CollisionException.COLLISION_MONKEY);
+		}else{
+			this.setCoordinateX(x);
+			this.setCoordinateY(y);
+		}
+	}
+
+}

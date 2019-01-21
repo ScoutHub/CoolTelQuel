@@ -1,0 +1,11 @@
+package fr.eseo.command;
+
+public class CommandDeplacement implements Command {
+	private Action action;
+	public CommandDeplacement(Action action){
+	  this.action = action;
+	}
+	public void execute(){
+	  action.movePirate();
+	}
+}

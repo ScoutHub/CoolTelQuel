@@ -1,0 +1,23 @@
+package fr.eseo.command;
+
+/** 
+ * The class DemandDown for the design pattern Command
+ */
+public class DemandDown implements Command{
+	
+	private Action action;
+	
+	/**
+	 * Instantiates a new demand of a down movement.
+	 * @param action the action
+	 */
+	public DemandDown(Action action){
+		this.action = action;
+	
+	}
+	
+	@Override
+	public void execute() {
+		action.demandDown();
+	}
+}

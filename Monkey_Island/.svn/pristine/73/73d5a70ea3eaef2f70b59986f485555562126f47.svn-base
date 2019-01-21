@@ -1,0 +1,89 @@
+package fr.eseo.model;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+/**
+ * The Class Configuration.
+ */
+public class Configuration {
+	
+	private int NRJ_Pirate_Max = 0;
+	
+	private static Configuration config = null;
+	
+	/**
+	 * Gets the single instance of Island.
+	 *
+	 * @return single instance of Island
+	 */
+	public static Configuration getInstance(){
+		if(config == null){
+			config= new Configuration();
+		}
+		return config;
+	}
+	
+	public Configuration(){
+		
+	}
+	
+	public int getNRJMax(){
+		return this.NRJ_Pirate_Max;
+	}
+	
+	public void Config(){
+		try {
+			Island isl = Island.getInstance();
+			File file = new File("resources/config.properties");
+			FileInputStream fileInput = new FileInputStream(file);
+			Properties properties = new Properties();
+			properties.load(fileInput);
+
+			int xIsl = Integer.parseInt(properties.getProperty("IslandWidth"));
+			int yIsl = Integer.parseInt(properties.getProperty("IslandWidth"));
+			isl.setIsland(xIsl, yIsl);
+			
+			
+			if(properties.getProperty("TreasureX") != null && properties.getProperty("TreasureY") != null){
+				int xTre = Integer.parseInt(properties.getProperty("TreasureX"));
+				int yTre = Integer.parseInt(properties.getProperty("TreasureY"));
+				Treasure.getTreasure().setPosition(xTre, yTre);
+			}
+
+			if(properties.getProperty("nbRhum") != null){
+				for(int i = 0; i<Integer.parseInt(properties.getProperty("nbRhum")); i++){
+					isl.getRhums().add(new Rhum(Integer.parseInt(properties.getProperty("Rhumx"+i+"")), Integer.parseInt(properties.getProperty("Rhumy"+i+"")), true, Integer.parseInt(properties.getProperty("NRJRhum"))));
+				}
+			}
+			
+			if(properties.getProperty("nbCrazyMonkey") != null){
+				for(int i = 0; i<Integer.parseInt(properties.getProperty("nbCrazyMonkey")); i++){
+					isl.getMonkeys().add(new CrazyMonkey(Integer.parseInt(properties.getProperty("CrazyMonkeyx"+i+"")), Integer.parseInt(properties.getProperty("CrazyMonkeyy"+i+""))));
+				}
+			}
+			
+			if(properties.getProperty("nbHunterMonkey") != null){
+				for(int i = 0; i<Integer.parseInt(properties.getProperty("nbHunterMonkey")); i++){
+					isl.getMonkeys().add(new CrazyMonkey(Integer.parseInt(properties.getProperty("HunterMonkeyx"+i+"")), Integer.parseInt(properties.getProperty("HunterMonkeyy"+i+""))));
+				}
+			}
+			
+			if(properties.getProperty("NRJMaxPirate") != null){
+				this.NRJ_Pirate_Max = Integer.parseInt(properties.getProperty("NRJMaxPirate"));
+			}
+
+			fileInput.close();
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CollisionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

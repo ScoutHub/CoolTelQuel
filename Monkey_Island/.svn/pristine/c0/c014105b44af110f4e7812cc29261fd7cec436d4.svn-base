@@ -1,0 +1,15 @@
+package fr.eseo.command;
+
+public class DemandDown implements Command{
+	
+	private Action action;
+	
+	public DemandDown(Action action){
+		this.action = action;
+	
+	}
+	@Override
+	public void execute() {
+		action.demandDown();
+	}
+}

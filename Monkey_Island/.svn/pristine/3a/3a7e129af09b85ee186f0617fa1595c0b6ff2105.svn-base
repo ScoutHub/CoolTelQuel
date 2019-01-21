@@ -1,0 +1,13 @@
+package fr.eseo.command;
+
+public class CommandInscription implements Command{
+	
+	private Action action;
+	
+	public CommandInscription(Action action){
+		this.action = action;
+	}
+	public void execute(){
+		action.inscription();
+	}
+}

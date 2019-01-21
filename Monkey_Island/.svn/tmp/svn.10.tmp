@@ -1,0 +1,75 @@
+package fr.eseo.model;
+
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+// 
+/**
+ * The Class Monkey.
+ */
+public abstract class Monkey extends Entity implements ActionListener{
+
+	private Timer timer;
+	/** The speed. */
+	private int speed;
+	
+	/** The Constant DEFAULT_SPEED. */
+	public static final int DEFAULT_SPEED = 75;
+	
+	/**
+	 * Instantiates a new monkey.
+	 */
+	public Monkey(){
+		super();
+		this.speed = DEFAULT_SPEED;
+		this.timer = new Timer(speed,this);
+		this.timer.start();
+	}
+	
+	/**
+	 * Instantiates a new monkey.
+	 * 
+	 * @param x the coordinate x of the monkey
+	 * @param y the coordinate y of the monkey
+	 */
+	public Monkey(int x, int y){
+		super(x, y);
+		this.speed = DEFAULT_SPEED;
+		this.timer = new Timer(speed,this);
+		this.timer.start();
+	}
+	
+	/**
+	 * Instantiates a new monkey.
+	 *
+	 * @param speed the speed
+	 * @param x the coordinate x of the monkey
+	 * @param y the coordinate y of the monkey
+	 */
+	public Monkey(int speed, int x, int y){
+		super(x, y);
+		this.speed = speed;
+		this.timer = new Timer(speed,this);
+		this.timer.start();
+	}
+	
+	/**
+	 * Gets the speed.
+	 *
+	 * @return the speed
+	 */
+	public int getSpeed(){
+		return this.speed;
+	}
+	
+	/**
+	 * Sets the speed.
+	 *
+	 * @param speed the new speed
+	 */
+	public void setSpeed(int speed){
+		this.speed = speed;
+	}
+	
+}

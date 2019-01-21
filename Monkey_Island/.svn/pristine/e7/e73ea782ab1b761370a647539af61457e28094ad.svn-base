@@ -1,0 +1,111 @@
+package fr.eseo.model;
+
+import java.util.ArrayList;
+
+//
+/**
+ * The Class HunterMonkey.
+ */
+public class HunterMonkey extends Monkey{
+	
+	public HunterMonkey( int x, int y){
+		super( x, y);
+	}
+	/**0
+	 * Instantiates a new hunter monkey.
+	 *
+	 * @param speed the speed
+	 * @param caseMonkey the case monkey
+	 */
+	public HunterMonkey(int speed, int x, int y){
+		super(speed, x, y);
+	}
+	
+	/**
+	 * Timer monkey.
+	 *
+	 * @param speed the speed
+	 * @throws InterruptedException the interrupted exception
+	 */
+	public void timerMonkey(int speed) throws InterruptedException{
+		
+		boolean finished = false;
+		try{
+			while(!finished){
+				Thread.sleep(1500 - speed*10);
+				finished = true;
+			}
+		}catch (InterruptedException exception){
+			System.out.println("interruption timer hunter monkey");
+		}
+	}
+	
+	public Pirate closerPirate(ArrayList<Pirate> pirates){
+	 
+		Pirate p = null;
+		final int x = Math.abs(pirates.get(0).getCoordinateX() - this.getCoordinateX());
+		final int y = Math.abs(pirates.get(0).getCoordinateY() - this.getCoordinateY());
+		for(int i=0; i<pirates.size(); i++){
+			if(pirates.get(i).getState()!=StatePirate.dead){
+				if ((Math.abs(pirates.get(i).getCoordinateX() - this.getCoordinateX()) <= x) 
+						&& Math.abs(pirates.get(i).getCoordinateY() - this.getCoordinateY()) <= y){
+					p=pirates.get(i);
+				}
+			}
+		}
+		return p;
+	}
+	
+	public int[] huntingPirates(Pirate pirate){
+		
+		final int[] tab = {0, 0};
+		while(pirate.getState()!=StatePirate.dead){
+			if(Math.abs(pirate.getCoordinateX() - this.getCoordinateX()) >= Math.abs(pirate.getCoordinateY() - this.getCoordinateY())){
+				tab[0]=1; 
+				tab[1]=0;
+			}else if(Math.abs(pirate.getCoordinateX() - this.getCoordinateX())
+						<= Math.abs(pirate.getCoordinateY() - this.getCoordinateY())){
+				tab[0]=0; 
+				tab[1]=1;
+			}
+		}
+		return tab;
+	}
+	
+	
+	
+	public void movementHunterMonkey(int speed, int[] tab) throws CollisionException, InterruptedException{
+		if(tab[0]<-1 || tab[0]>1 || tab[1]<-1 || tab[1]>1 || tab[0]==-1 && tab[1]==1 
+				|| tab[0]==1 && tab[1]==-1 || tab[0]==1 && tab[1]==1 || tab[0]==-1 && tab[1]==-1){
+			throw new IllegalArgumentException("MOVEMENT not allowed");
+		} else if(Island.getInstance() != null){
+			if(this.getCoordinateX()+tab[0] >= Island.getInstance().getnbRows()-1 
+					|| this.getCoordinateX()+tab[0] <= 0 
+					|| this.getCoordinateY()+tab[1] >= Island.getInstance().getnbLines()-1
+					|| this.getCoordinateY()+tab[1] <= 0){	
+				throw new CollisionException("Limits of island", CollisionException.COLLISION_EXIT_ISLAND);
+			}else if(Island.getInstance().getCase()[this.getCoordinateX()+tab[0]][this.getCoordinateY()+tab[1]].getCaseType()
+					== CaseType.sea){
+				throw new CollisionException("Collision sea",
+						CollisionException.COLLISION_SEA);
+			}else if(Island.getInstance().collisionPirate(this.getCoordinateX()+tab[0],
+					this.getCoordinateY()+tab[1])!=null){
+					Island.getInstance().collisionPirate(
+							this.getCoordinateX()+tab[0], this.getCoordinateY()+tab[1]).setState(StatePirate.dead);
+					Island.getInstance().collisionPirate(this.getCoordinateX()+tab[0], this.getCoordinateY()+tab[1]).setEnergy(0);
+					this.setCoordinateX(this.getCoordinateX()+tab[0]);
+					this.setCoordinateY(this.getCoordinateY()+tab[1]);
+			}else if(Island.getInstance().collisionMonkey(this.getCoordinateX()+tab[0],
+					this.getCoordinateY()+tab[1])!=null){
+					throw new CollisionException("There is already a monkey",
+							CollisionException.COLLISION_MONKEY);
+			}else{
+				//timerMonkey(DEDEFAULT_SPEED);
+				this.setCoordinateX(this.getCoordinateX()+tab[0]);
+				this.setCoordinateY(this.getCoordinateY()+tab[1]);
+			}
+		}
+		
+	}
+	
+}

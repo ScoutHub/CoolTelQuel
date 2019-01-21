@@ -1,0 +1,16 @@
+package fr.eseo.model.command;
+
+import fr.eseo.model.CollisionException;
+
+public class CommandControl {
+	
+	private Command command;
+	
+	public void setCommand(Command command){
+		System.out.println("command");
+    	this.command = command;
+	}
+	public void commandAction(){
+		command.execute();
+	}
+}

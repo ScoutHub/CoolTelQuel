@@ -1,0 +1,80 @@
+package fr.eseo.model;
+
+import java.util.Observable;
+
+// 
+/**
+ * The Class Character.
+ */
+public abstract class Entity extends Observable{
+	
+	/** The coordinate X. */
+	private int coordinateX;
+	
+	/** The coordinate Y. */
+	private int coordinateY;
+	
+	
+	/**
+	 * Instantiates a new character.
+	 */
+	public Entity(){
+		this.coordinateX = 0;
+		this.coordinateY = 0;
+	}
+	
+	/**
+	 * Instantiates a new character.
+	 * 
+	 * @param x the coordinate x of the entity
+	 * @param y the coordinate y of the entity
+	 */
+	public Entity(int x, int y){
+		this.coordinateX = x;
+		this.coordinateY = y;
+	}
+	
+	
+	/**
+	 * Gets the case character.
+	 *
+	 * @return the case character
+	 */
+	public int getCoordinateX(){
+		return this.coordinateX;
+	}
+	
+	
+	/**
+	 * Gets the case character.
+	 *
+	 * @return the case character
+	 */
+	public int getCoordinateY(){
+		return this.coordinateY;
+	}
+	
+	/**
+	 * Sets the case character.
+	 *
+	 * @param x the coordinate x of the entity
+	 */
+	public void setCoordinateX(int x){
+		this.coordinateX = x;
+		this.setChanged();
+		this.notifyObservers(this.coordinateX);
+	}
+	
+	/**
+	 * Sets the case character.
+	 *
+	 * @param y the coordinate y of the entity
+	 */
+	public void setCoordinateY(int y){
+		this.coordinateY = y;
+		this.setChanged();
+		this.notifyObservers(this.coordinateY );
+	}
+	
+
+}

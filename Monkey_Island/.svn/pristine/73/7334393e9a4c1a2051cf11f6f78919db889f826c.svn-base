@@ -1,0 +1,52 @@
+package fr.eseo.model.command;
+
+import java.awt.Point;
+
+import fr.eseo.communication.Client;
+import fr.eseo.communication.CommunicationMonkeyIsland;
+import fr.eseo.communication.EntityObserver;
+import fr.eseo.communication.ProtocoleMonkeyIsland;
+import fr.eseo.communication.ServiceMonkeyIsland;
+import fr.eseo.model.CollisionException;
+import fr.eseo.model.Island;
+
+public class Action {
+	
+	private String message;
+	
+	private EntityObserver ent;
+	/**
+	 * Serveur MonkeyIsland du client.
+	 */
+	private ServiceMonkeyIsland monkeyIsland;
+	
+	
+	private Client client;
+	
+	public Action(ServiceMonkeyIsland monkeyIsland, Client client, String message){
+		this.message = message;
+		this.monkeyIsland = monkeyIsland;
+		this.client = client;
+	}
+	
+	public void inscription(){
+		ent = new EntityObserver(client);
+		this.monkeyIsland.inscriptionCanal(client); 
+		Island.getInstance().AddPirate();
+		Island.getInstance().getPirates().get(0).addObserver(ent);
+		client.envoieMessage(ProtocoleMonkeyIsland.formatteMessageIndicationCarte(Island.getInstance().getCase()));	
+		client.envoieMessage(ProtocoleMonkeyIsland.MESSAGE_INSCRIPTION);
+		client.envoieMessage(ProtocoleMonkeyIsland.formaterIdentificationPirate(Island.getInstance().getPirates()));
+		client.envoieMessage(ProtocoleMonkeyIsland.formaterPositionRhum(Island.getInstance().getRhums()));
+	}
+	public void movePirate(){
+		try{
+			Point p = ProtocoleMonkeyIsland.commandeDuDeplacement(message);
+			Island.getInstance().getPirates().get(0).movementPirate(p.x, p.y);
+		}catch (Exception e) {
+			client.envoieMessage(ProtocoleMonkeyIsland.formaterRefusDeplacementPirate());
+			System.err.println(e.getMessage());
+		}
+	}
+}
+	

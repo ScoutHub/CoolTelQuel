@@ -1,0 +1,91 @@
+package fr.eseo.model;
+
+// 
+/**
+ * The Class Rhum.
+ */
+public class Rhum extends Item{
+
+	/** The energy quantity. */
+	private int energyQuantity;
+	
+	/** The Constant DEFAULT_ENERGY_QUANTITY. */
+	public static final int DEFAULT_ENERGY_QUANTITY = 15;
+	
+	/**
+	 * Instantiates a new rhum.
+	 *
+	 * @param visibility the visibility
+	 */
+	public Rhum(){
+		super();
+		this.energyQuantity = DEFAULT_ENERGY_QUANTITY;
+	}
+	
+	public Rhum(boolean vis){
+		super(vis);
+		this.energyQuantity = DEFAULT_ENERGY_QUANTITY;
+	}
+	
+	/**
+	 * Instantiates a new rhum.
+	 *
+	 * @param visibility the visibility
+	 */
+	public Rhum(int x, int y, boolean vis){
+		super(x, y, vis);
+		this.energyQuantity = DEFAULT_ENERGY_QUANTITY;
+	}
+	
+	/**
+	 * Instantiates a new rhum.
+	 *
+	 * @param visibility the visibility
+	 * @param energyQuantity the energy quantity
+	 */
+	public Rhum(int x, int y, boolean visibility, int energyQuantity){
+		super(x, y, visibility);
+		this.energyQuantity = energyQuantity;
+	}
+	
+	/**
+	 * Gets the energy quantity.
+	 *
+	 * @return the energy quantity
+	 */
+	public int getEnergyQuantity(){
+		return this.energyQuantity;
+	}
+	
+	/**
+	 * Sets the energy quantity.
+	 *
+	 * @param energyQuantity the new energy quantity
+	 */
+	public void setEnergyQuantity(int energyQuantity){
+		this.energyQuantity = energyQuantity;
+	}
+	
+	/**
+	 * Time before the rhum becomes visible again after being drunk.
+	 *
+	 * @param time the time of disappearance
+	 * @throws InterruptedException the interrupted exception
+	 */
+	public void timerRhum(int time) throws InterruptedException{
+		
+		if(this.getVisibility()==false){
+			boolean finished = false;
+			try{
+				while(!finished){
+					Thread.sleep(time*1000);
+					finished = true;
+					this.setVisibility(true);
+				}
+			} catch (InterruptedException exception){
+				System.out.println("interruption timer rhum");
+			}
+		}
+	}
+	
+}

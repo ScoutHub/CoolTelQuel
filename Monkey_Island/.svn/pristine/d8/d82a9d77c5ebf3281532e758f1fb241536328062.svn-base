@@ -1,0 +1,171 @@
+package fr.eseo.communication;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import fr.eseo.model.Configuration;
+
+/**
+ * Classe de service de MonkeyIsland.
+ * 
+ * <p>
+ * Ce service consiste à ouvrir une socket d'écoute de connexion pour les clients MonkeyIsland.
+ * Quant un client se connecte, un instance de client (ClientMonkeyIsland) est créée pour 
+ * gérer les interactions avec ce client.
+ * </p>
+ * 
+ * @version 2.0
+ * @author Matthias Brun
+ * 
+ * @see fr.eseo.communication.ClientMonkeyIsland
+ */
+public final class ServiceMonkeyIsland{
+	/**
+	 * La socket de connexion des nouveaux clients.
+	 */
+	private ServerSocket socket; 
+
+	/**
+	 * Le canal de diffusion de MonkeyIsland.
+	 */
+	private CanalDiffusion canal;
+
+	/**
+	 * Constructeur d'un service de MonkeyIsland.
+	 *
+	 * @throws Exception toute exception.
+	 *
+	 */
+	public ServiceMonkeyIsland() throws Exception{
+		// Création du canal de diffusion.
+		this.canal = new CanalDiffusion();
+		Configuration.getInstance().loading();
+		// Socket à null par défaut.
+		this.socket = null;
+
+	}
+	
+	/**
+	 * Lancement du service.
+	 * 
+	 * @param port le port d'écoute du service.
+	 *
+	 * @throws Exception toute exception.
+	 */
+	public void lanceService(Integer port) throws Exception{
+		// Ouverture de la socket serveur.
+		try {
+			this.socket = new ServerSocket(port);
+			final InetAddress localeAdresse;
+			localeAdresse = InetAddress.getLocalHost();
+			System.out.println("L'adresse locale est : "+localeAdresse );
+			
+		}catch (Exception ex) {
+			System.err.println("Problème de création de la socket de MonkeyIsland.");
+			throw ex;
+		}
+		
+		// Lancement du service.
+		try {
+			service();
+		}catch (Exception ex) {
+			System.err.println("Problème lors du service de MonkeyIsland.");
+			fermeSocket();
+			throw ex;
+		}
+	}
+	
+	/**
+	 * Fermeture de la socket de MonkeyIsland.
+	 *
+	 * @throws Exception toute exception.
+	 *
+	 */
+	private void fermeSocket() throws Exception{
+		try {
+			this.socket.close();
+		} catch (Exception ex) {
+			System.err.println("Problème de fermeture de la socket " + this.socket);
+			throw ex;
+		}	
+	}
+
+	/**
+	 * Service de MonkeyIsland.
+	 *
+	 * @throws IOException exception d'entrée/sortie de fichier (socket).
+	 *
+	 * @see ClientMonkeyIsland
+	 *
+	 */
+	private void service() throws IOException{
+		while (true) {
+			// Création d'une socket de communication avec un client qui se connecte à MonkeyIsland.
+			final Socket socketClient = this.socket.accept();
+
+			// Création d'un client MonkeyIsland.
+			final ClientMonkeyIsland client = new ClientMonkeyIsland(this, socketClient);
+
+			// Lancement d'un thread de service au client.
+			client.lanceService();
+			
+			System.out.println("Ouverture connexion client (id : " + client.donneId() + ")");
+		}
+	}
+
+	/**
+	 * Inscrit un client au canal de diffusion de MonkeyIsland.
+	 * 
+	 * @param client le client concerné.
+	 */
+	public void inscriptionCanal(Client client){
+		// Synchronization :
+		// Pour éviter d'ajouter un client alors qu'un envoi de message est en cours.
+		synchronized (this.canal) {
+			this.canal.ajouteClient(client);
+		}
+	}	
+	
+	/**
+	 * 
+	 * @return canal diffusion.
+	 */
+		
+	public CanalDiffusion getCanalDiffusion(){	
+		return this.canal;
+	}
+	
+	/**
+	 * Envoie d'un message sur le canal de diffusion.
+	 *
+	 * @param message le message à envoyer.
+	 */
+	private void envoieCanal(String message){
+		// Synchronisation : 
+		// Pour éviter qu'un client ne soit supprimé du canal lors de l'envoi.
+		synchronized (this.canal) {
+			this.canal.envoieClients(message);
+		}
+	}
+
+	/**
+	 * Fermeture d'une connexion avec un client.
+	 *
+	 * @param client le client concerné.
+	 */
+	public void fermeConnexion(Client client) {
+		System.out.println("Fermeture connexion client (id : " + client.donneId() + ")");
+
+		// Synchronisation :
+		// Pour éviter qu'une connexion soit fermée lors de l'envoi d'un message sur le canal du client.
+		synchronized (this.canal) {
+			// Suppression du client dans le canal.
+			this.canal.enleveClient(client);
+
+			client.termineCommunication();
+		}
+	}
+}
+

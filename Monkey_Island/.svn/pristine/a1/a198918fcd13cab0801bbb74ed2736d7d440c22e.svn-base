@@ -1,0 +1,6 @@
+package fr.eseo.model.command;
+
+
+public interface Command {
+	public void execute();
+}

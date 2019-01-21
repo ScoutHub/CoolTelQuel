@@ -1,0 +1,46 @@
+package fr.eseo.model.test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+import fr.eseo.model.*;
+
+public class TestIsland {
+	
+	private Island isl;
+	
+	private static final int NB_ROWS = 3;
+	
+	private static final int NB_LINES = 3;
+	
+	@Before
+	public void setUp() throws Exception{	
+		
+		isl = Island.getInstance();
+		
+	}
+	
+	@Test
+	public void testInitIsland(){
+		isl.setnbLines(NB_LINES);
+		isl.setnbRows(NB_ROWS);
+		isl.setLengthCase(NB_LINES, NB_ROWS);
+		isl.initIsland();
+		for(int i = 0; i< NB_ROWS; i++){
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[i][0].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[i][2].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[0][i].getCaseType());
+			assertEquals("Error type case", CaseType.sea, isl.getCase()[2][i].getCaseType());
+		}
+		assertEquals("Error type case", CaseType.earth, isl.getCase()[1][1].getCaseType());
+	}
+	
+	@Test
+	public void testSetIsland(){
+		assertEquals("Error type case", Island.getInstance().getnbLines(), 3);
+		isl.setIsland(20, 20);
+		assertEquals("Error type case", Island.getInstance().getnbLines(), 20);
+	}
+
+}

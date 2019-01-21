@@ -1,0 +1,12 @@
+package fr.eseo.command;
+
+public class DemandRight implements Command{
+	Action action;
+	  public DemandRight(Action action){
+	    this.action = action;
+	  }
+	@Override
+	public void execute() {
+		action.demandRight();
+	}
+}

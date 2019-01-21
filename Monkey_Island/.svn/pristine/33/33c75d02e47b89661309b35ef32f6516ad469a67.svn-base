@@ -1,0 +1,14 @@
+package fr.eseo.model.command;
+
+import fr.eseo.model.CollisionException;
+import fr.eseo.model.Island;
+
+public class CommandInscription implements Command{
+	Action action;
+	  public CommandInscription(Action action){
+	    this.action = action;
+	  }
+	  public void execute(){
+	    action.inscription();
+	  }
+}

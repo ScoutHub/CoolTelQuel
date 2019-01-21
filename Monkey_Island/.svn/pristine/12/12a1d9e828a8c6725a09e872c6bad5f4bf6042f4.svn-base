@@ -1,0 +1,36 @@
+package fr.eseo.model;
+
+import java.awt.Point;
+
+// 
+/**
+ * A factory for creating Monkey objects.
+ */
+public class MonkeyFactory {
+	
+	/* exemples config */
+	private static Point[] cm = {new Point(5, 5), new Point(6, 7)};
+	private static Point[] hm = {new Point(7, 8), new Point(11, 4)};
+	
+	/**
+	 * Instantiates a new monkey factory.
+	 */
+	private MonkeyFactory(){
+	}
+	
+	public static void newMonkey(){
+		CrazyMonkey crazyMonkey = null;
+		HunterMonkey hunterMonkey = null;
+		
+		for(int i = 0; i< cm.length; i++){
+			for(int j = 0; j< hm.length; j++){
+				crazyMonkey = new CrazyMonkey(Monkey.DEFAULT_SPEED, cm[i].x, cm[i].y);
+				hunterMonkey = new HunterMonkey(Monkey.DEFAULT_SPEED, hm[j].x, hm[j].y);
+				Island.getInstance().getMonkeys().add(crazyMonkey);
+				Island.getInstance().getMonkeys().add(hunterMonkey);
+			}
+		}
+		
+	}
+	
+}

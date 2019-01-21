@@ -1,0 +1,57 @@
+/*
+ * 
+ */
+package fr.eseo.model;
+
+import java.awt.event.ActionEvent;
+import java.util.Random;
+
+// 
+/**
+ * The Class CrazyMonkey.
+ */
+public class CrazyMonkey extends Monkey{
+
+	/**
+	 * Instantiates a new crazy monkey.
+	 *
+	 * @param x the coordinate x of the crazy monkey
+	 * @param y the coordinate y of the crazy monkey
+	 */
+	public CrazyMonkey(int x, int y){
+		super(Monkey.DEFAULT_SPEED, x, y);
+	}
+	
+	/**
+	 * Instantiates a new crazy monkey.
+	 *
+	 * @param speed the speed
+	 * @param x the coordinate x of the crazy monkey
+	 * @param y the coordinate y of the crazy monkey
+	 */
+	public CrazyMonkey(int speed, int x, int y){
+		super(speed, x, y);
+	}
+	
+	/**
+	 * MOVEMENT monkey.
+	 *
+	 * @param speed the speed
+	 * @throws InterruptedException 
+	 */
+	public void movementMonkey(){
+			final Random rand = new Random();
+			final int x = rand.nextInt(3)-1;
+			final int y = rand.nextInt(3)-1;	
+			try {
+				this.setPositionMonk(this.getCoordinateX()+x, this.getCoordinateY()+y);
+			} catch (CollisionException e) {
+				movementMonkey();
+			}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+			this.movementMonkey();
+	}
+}

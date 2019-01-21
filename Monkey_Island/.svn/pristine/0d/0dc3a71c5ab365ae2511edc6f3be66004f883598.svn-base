@@ -1,0 +1,25 @@
+package fr.eseo.communication;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import fr.eseo.model.Island;
+import fr.eseo.model.Pirate;
+
+public class EntityObserver implements Observer{
+	
+	private Client client;
+	
+	public EntityObserver(Client client){
+		this.client = client;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if(o instanceof Pirate){
+			this.client.envoieMessage(
+					ProtocoleMonkeyIsland.formaterAcceptationDeplacementPirate(Island.getInstance().getPirates().get(0)));
+		}
+	}
+
+}
